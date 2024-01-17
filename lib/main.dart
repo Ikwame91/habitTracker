@@ -8,6 +8,7 @@ void main() {
     providers: [
       ChangeNotifierProvider(create: (context) => Themeprovider()),
     ],
+    child: const MyApp(),
   ));
 }
 
