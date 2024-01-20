@@ -117,12 +117,23 @@ CRUDXOPERATIONS
     if (habit != null) {
       //update name
       await isar.writeTxn(() async {
-        habit.name == newName;
+        habit.name = newName;
         //save updated habit back to the db
         await isar.habits.put(habit);
       });
     }
+
+    readHabits();
   }
 
   //Delete -delete Habit
+  Future<void> deleteHabit(int id) async {
+    //delete habit
+    await isar.writeTxn(() async {
+      await isar.habits.delete(id);
+    });
+
+    //re-read from db
+    readHabits();
+  }
 }
