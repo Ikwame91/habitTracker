@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:habit_tracker/componenets/drawer.dart';
+import 'package:habit_tracker/componenets/habit_tile.dart';
 import 'package:habit_tracker/database/habit_database.dart';
+import 'package:habit_tracker/models/habit.dart';
+import 'package:habit_tracker/utils/habit_util.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -11,6 +14,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  //initialize controller
+  @override
+  void initState() {
+    //read existing habits on startup
+    super.initState();
+    Provider.of<HabitDatabase>(context, listen: false).readHabits();
+  }
+
   final TextEditingController _textEditingController = TextEditingController();
   void createNewHabit() {
     showDialog(
@@ -25,7 +36,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             actions: [
-              TextButton(
+              MaterialButton(
                   onPressed: () {
                     //get new habit
                     String newHabitName = _textEditingController.text;
@@ -40,7 +51,7 @@ class _HomePageState extends State<HomePage> {
                     _textEditingController.clear();
                   },
                   child: const Text('Save')),
-              TextButton(
+              MaterialButton(
                 onPressed: () {
                   //pop box
                   Navigator.of(context).pop();
@@ -48,11 +59,18 @@ class _HomePageState extends State<HomePage> {
                   //clear controller
                   _textEditingController.clear();
                 },
-                child: const Text('Create'),
+                child: const Text('Cancel'),
               )
             ],
           );
         });
+  }
+
+  //checkHabit on and Off
+  void checkHabitOnOff(bool? value, Habit habit) {
+    if (value != null) {
+      context.read<HabitDatabase>().updateHabitCompletion(habit.id, value);
+    }
   }
 
   @override
@@ -67,6 +85,36 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).colorScheme.tertiary,
         child: const Icon(Icons.add),
       ),
+      body: _buildHabitsList(),
     );
+  }
+
+  Widget _buildHabitsList() {
+    //habit db
+    final habitDatabase = context.watch<HabitDatabase>();
+
+    //current habits
+    List<Habit> currentHabits = habitDatabase.currentHabits;
+
+    //check if there are any habits
+    if (currentHabits.isEmpty) {
+      return const Center(
+        child: Text('No habits yet'),
+      );
+    }
+    return ListView.builder(
+        itemCount: currentHabits.length,
+        itemBuilder: ((context, index) {
+          //get individual habit
+          final habit = currentHabits[index];
+
+          //check if habit is completed today
+          bool isCompletedToday = isHabitCompletedToday(habit.completedDays);
+
+          return MyHabitTile(
+              isCompleted: isCompletedToday,
+              text: habit.name,
+              onChanged: (value) => checkHabitOnOff(value, habit));
+        }));
   }
 }
