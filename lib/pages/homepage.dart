@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text('Are you sure you want to delete ${habit.name}?'),
+              title: Text('Are you sure you want to delete "${habit.name}"?'),
               actions: [
                 MaterialButton(
                     onPressed: () {
@@ -145,13 +145,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
-      appBar: AppBar(),
+      appBar: AppBar(
+        elevation: 0.0,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
       drawer: const MyDrawer(),
       floatingActionButton: FloatingActionButton(
         onPressed: createNewHabit,
         elevation: 0.0,
-        backgroundColor: Theme.of(context).colorScheme.tertiary,
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.transparent,
+        foregroundColor: Theme.of(context).colorScheme.tertiary,
+        child: const Icon(Icons.add, color: Colors.black),
       ),
       body: _buildHabitsList(),
     );
