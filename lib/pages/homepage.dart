@@ -163,6 +163,9 @@ class _HomePageState extends State<HomePage> {
           _buildHeatMap(),
           //HabitList
           _buildHabitsList(),
+          const SizedBox(
+            height: 50,
+          ),
         ]));
   }
 
@@ -193,28 +196,36 @@ class _HomePageState extends State<HomePage> {
 
     //check if there are any habits
     if (currentHabits.isEmpty) {
-      return const Center(
-        child: Text('No habits yet'),
+      return Center(
+        child: Text(
+          'No habits yet',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.inversePrimary,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       );
     }
     return ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: currentHabits.length,
-        itemBuilder: ((context, index) {
-          //get individual habit
-          final habit = currentHabits[index];
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: currentHabits.length,
+      itemBuilder: ((context, index) {
+        //get individual habit
+        final habit = currentHabits[index];
 
-          //check if habit is completed today
-          bool isCompletedToday = isHabitCompletedToday(habit.completedDays);
+        //check if habit is completed today
+        bool isCompletedToday = isHabitCompletedToday(habit.completedDays);
 
-          return MyHabitTile(
-            isCompleted: isCompletedToday,
-            text: habit.name,
-            onChanged: (value) => checkHabitOnOff(value, habit),
-            editHabit: (context) => editHabitBox(habit),
-            deleteHabit: (context) => deleteHabit(habit),
-          );
-        }));
+        return MyHabitTile(
+          isCompleted: isCompletedToday,
+          text: habit.name,
+          onChanged: (value) => checkHabitOnOff(value, habit),
+          editHabit: (context) => editHabitBox(habit),
+          deleteHabit: (context) => deleteHabit(habit),
+        );
+      }),
+    );
   }
 }
